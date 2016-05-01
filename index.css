@@ -1,0 +1,29 @@
+/* CSS declarations go here */
+
+
+#login-buttons {
+  padding: 15px;
+}
+#login-dropdown-list {
+  top: 5px !important;
+  left: auto !important;
+  right: 5px !important;
+}
+
+
+
+
+.summary-box {
+  position: relative;
+  margin: 10px auto;
+  border: 1px solid grey;
+  padding: 10px;
+
+  min-height: 60px;
+}
+.summary-box .buttons {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    text-align: right;
+}

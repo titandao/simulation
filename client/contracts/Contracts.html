@@ -1,7 +1,12 @@
 <template name="Contracts">
   <section class="contracts">
+
     {{#each contracts}}
       {{> Contract}}
+    {{else}}
+      You have no existing contracts stored
     {{/each}}
+
+    
   </section>
 </template>

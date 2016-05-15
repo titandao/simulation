@@ -8,26 +8,48 @@
 
 <template name="addContractSimulation">
   <div class="row">
+    <div class="col-md-12">
+      <div class="alert alert-danger text-center my-hide"></div>
+    </div>
+  </div>
+
+  <div class="row">
     <div class="col-md-6">
       <h2>Contracts</h2>
 
-      <form class="add-contract">
-        <div class="input-group">
+      <p>
+        Assuming some contracts are already deployed on the network,
+        you can look them up here
+      </p>
+
+      <h3>Find Contract</h3>
+      <form id="add-contract">
+        <input name="name" type="text" class="form-control" placeholder="Name (optional)">
+
+        <textarea name="abi" form="add-contract" class="form-control small-space-top" placeholder="ABI"></textarea>
+        <div class="input-group small-space-top">
           <input name="address" type="text" class="form-control" placeholder="Enter contract address...">
           <span class="input-group-btn">
             <button type="submit" class="btn btn-default">
               <span class="fa fa-plus"></span>
             </button>
           </span>
-        </div><!-- /input-group -->
+        </div>
       </form>
 
-
+      <h3>Existing Contracts</h3>
       {{> Contracts}}
 
     </div>
     <div class="col-md-6">
       <h2>Simulations</h2>
+
+      <button class="btn btn-success">
+        <span class="fa fa-plus"></span>
+        New Simulation
+      </button>
+
+
     </div>
   </div>
 </template>

@@ -27,3 +27,17 @@
     right: 5px;
     text-align: right;
 }
+
+
+/* generic */
+
+.small-space-top {
+  margin-top: 5px;
+}
+.medium-space-top {
+  margin-top: 10px;
+}
+
+.my-hide {
+  display: none;
+}

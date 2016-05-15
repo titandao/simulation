@@ -6,7 +6,7 @@ Contracts.allow({
     return !!userId;
   },
   remove: function(userId, doc) {
-    return false;
+    return true;
   }
 });
 
@@ -14,16 +14,23 @@ Contracts.allow({
 ContractSchema = new SimpleSchema({
   address: {
     type: String,
-    label: "Address"
+    label: "address"
   },
   name: {
     type: String,
-    label: "Name",
+    label: "name",
     optional: true
   },
+  abi: {
+    type: [Object],
+    label: "abi",
+    optional: true
+  },
+  // ! this is the frontend creator,
+  // not the actual contract .sol writer
   author: {
     type: String,
-    label: "Author",
+    label: "author",
     autoValue: function() {
       return this.userId;
     }
@@ -42,8 +49,16 @@ Contracts.attachSchema( ContractSchema );
 
 Meteor.methods({
   addContract: function(data) {
-    // data.createdAt = new Date();
+
+    // console.log(data); return;
+
     Contracts.insert(data);
+
+    // get the contract at given abi, address
+    // var contract = web3.eth.contract(data.abi).at(data.address);
+
+    // console.log(contract);
+
   },
 
   removeContract: function(id) {

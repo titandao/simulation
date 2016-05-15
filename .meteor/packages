@@ -17,6 +17,7 @@ standard-minifier-js    # JS minifier run for production mode
 es5-shim                # ECMAScript 5 compatibility for older browsers.
 ecmascript              # Enable ECMAScript2015+ syntax in app code
 
+ethereum:web3
 twbs:bootstrap
 accounts-password
 accounts-ui
@@ -25,3 +26,4 @@ kadira:blaze-layout
 aldeed:collection2
 meteortoys:allthings
 fortawesome:fontawesome
+misrab:generic-helpers

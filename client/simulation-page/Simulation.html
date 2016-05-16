@@ -1,0 +1,24 @@
+<template name="Simulation">
+
+  <div class="summary-box">
+    <div>
+      <strong>name: </strong>{{ name }}
+    </div>
+
+    {{#if isOwner}}
+      <div class="buttons">
+        <a href="/simulation/{{_id}}" class="btn btn-default">
+          <span class="fa fa-link"></span>
+        </a>
+
+        <span class="btn btn-danger remove">
+          <span class="fa fa-remove"></span>
+        </span>
+      </div>
+    {{/if}}
+  </div>
+
+
+
+
+</template>

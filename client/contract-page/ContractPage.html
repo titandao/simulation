@@ -1,8 +1,34 @@
 <template name="ContractPage">
+  <h1>Contract Page</h1>
+
   {{#if Template.subscriptionsReady}}
     {{#with contract}}
-      <h3>{{address}}</h3>
+
+
+      <!-- contract here -->
+      <div>
+        <strong>name: </strong>{{ name }}
+      </div>
+      <div>
+        <strong>address: </strong>{{ address }}
+      </div>
+      <div>
+        <strong>abi: </strong>
+        <div style="white-space: pre;">{{ pretty abi }}</div>
+      </div>
+
+
+      {{#if isOwner}}
+        <div class="buttons">
+          <span class="btn btn-danger remove">
+            <span class="fa fa-remove"></span>
+          </span>
+        </div>
+      {{/if}}
     {{/with}}
+    <!-- end contract -->
+
+
   {{else}}
       <p>Loading...</p>
   {{/if}}

@@ -11,6 +11,11 @@ Contracts.allow({
 });
 
 
+// DataObject = function (data) {
+//   _.extend(this, data);
+// };
+
+
 ContractSchema = new SimpleSchema({
   address: {
     type: String,
@@ -22,9 +27,9 @@ ContractSchema = new SimpleSchema({
     optional: true
   },
   abi: {
-    type: [Object],
-    label: "abi",
-    optional: true
+    type: String,
+    label: "abi"
+    // optional: true
   },
   // ! this is the frontend creator,
   // not the actual contract .sol writer
@@ -51,6 +56,9 @@ Meteor.methods({
   addContract: function(data) {
 
     // console.log(data); return;
+    // console.log(JSON.stringify(data.abi));
+    // return;
+    // data.abi = { "moo": "foo" };
 
     Contracts.insert(data);
 

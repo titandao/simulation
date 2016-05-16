@@ -13,9 +13,11 @@ Package.describe({
 Package.onUse(function(api) {
   api.versionsFrom('1.3.2.4');
   api.use('ecmascript');
+  api.use('templating', 'client');
   // api.mainModule('generic-helpers.js', 'client');
   api.addFiles('generic-helpers.js', 'client');
   api.export('ErrorMsg', 'client');
+  api.export('SuccessMsg', 'client');
 });
 
 Package.onTest(function(api) {

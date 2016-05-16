@@ -1,14 +1,20 @@
 Meteor.subscribe('contracts');
 
 
+/*
+  Contracts (plural)
+*/
 
 Template.Contracts.helpers({
    contracts: ()=> {
-     return Contracts.find({});
+     // get only this user's contracts
+     return Contracts.find({author: Meteor.userId()});
    }
 });
 
-
+/*
+  Contract (singular)
+*/
 
 Template.Contract.helpers({
    isOwner() {

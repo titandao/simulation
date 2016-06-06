@@ -98,6 +98,7 @@ reactive-dict@1.1.7
 reactive-var@1.0.9
 reload@1.1.8
 retry@1.0.7
+robodo:async@0.9.0
 routepolicy@1.0.10
 service-configuration@1.0.9
 session@1.1.5

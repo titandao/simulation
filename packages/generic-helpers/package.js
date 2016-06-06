@@ -18,6 +18,7 @@ Package.onUse(function(api) {
   api.addFiles('generic-helpers.js', 'client');
   api.export('ErrorMsg', 'client');
   api.export('SuccessMsg', 'client');
+  api.export('ToggleLoader', 'client');
 });
 
 Package.onTest(function(api) {

@@ -12,11 +12,31 @@
       <h2>Contracts</h2>
 
       <p>
-        Assuming some contracts are already deployed on the network,
-        you can look them up here
+        Deploy a new contract from code, or find existing ones
       </p>
 
+
+      <h3>Deploy New Contract</h3>
+      <p>
+        If there are dependencies, multiple contracts will be deployed. Each is
+        named as per the code.
+      </p>
+      <form id="deploy-contract">
+        <!-- name derived from contract -->
+        <!-- <input name="name" type="text" class="form-control" placeholder="Name (optional)"> -->
+
+        <textarea name="code" form="deploy-contract" class="form-control small-space-top" placeholder="Complete solidity code"></textarea>
+
+        <button type="submit" class="btn btn-default pull-right small-space-top">
+          <!-- <span class="fa fa-plus"></span> -->
+          Deploy
+        </button>
+      </form>
+
       <h3>Find Contract</h3>
+      <p>
+        Find a contract that's already been deployed.
+      </p>
       <form id="add-contract">
         <input name="name" type="text" class="form-control" placeholder="Name (optional)">
 
@@ -25,7 +45,8 @@
           <input name="address" type="text" class="form-control" placeholder="Enter contract address...">
           <span class="input-group-btn">
             <button type="submit" class="btn btn-default">
-              <span class="fa fa-plus"></span>
+              <!-- <span class="fa fa-plus"></span> -->
+              Find
             </button>
           </span>
         </div>

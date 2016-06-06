@@ -37,6 +37,10 @@ SuccessMsg = function( msg ) {
   showMsg('.alert-success', msg);
 };
 
+ToggleLoader = function() {
+  $('.loader').toggle();
+}
+
 
 Template.registerHelper('stringify', ( obj )=> {
   if (typeof(obj) !== 'object') {

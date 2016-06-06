@@ -18,6 +18,15 @@ Simulations = new Mongo.Collection('simulations');
 
 SimulationSchema = new SimpleSchema({
 
+  // store contract ids
+  contracts: {
+    type: [String],
+    label: "contracts",
+    optional: true
+    // results in mongo duplicate error
+    // autoValue: ()=> { return []; }
+  },
+
   name: {
     type: String,
     label: "name"
@@ -48,12 +57,17 @@ Simulations.attachSchema( SimulationSchema );
 
 
 Meteor.methods({
+  // contracts() {
+  //   var _ids =
+  // },
+
   addSimulation: function(data) {
 
     // console.log(data); //return;
     // console.log(JSON.stringify(data.abi));
     // return;
     // data.abi = { "moo": "foo" };
+    data.contracts = [];
     Simulations.insert(data);
     // try {
     //   Simulations.insert(data);
@@ -68,6 +82,22 @@ Meteor.methods({
 
     // console.log(contract);
 
+  },
+
+  updateSimulationAddContract: function(sim_id, con) {
+    Simulations.update(sim_id, {
+      $push: {
+        'contracts': con
+      }
+    });
+  },
+
+  simulationRemoveContract: function(sim_id, con_id) {
+    Simulations.update(sim_id, {
+      $pull: {
+        'contracts': con_id
+      }
+    });
   },
 
   updateSimulation: function(id, data) {

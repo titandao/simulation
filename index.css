@@ -6,6 +6,10 @@ main {
 }
 
 #simulationViewer {
+  margin: 20px auto;
+  display: none;
+}
+/*#simulationViewer {
   background-color: white;
   border: 1px solid grey;
   width: 100%;
@@ -13,7 +17,7 @@ main {
   margin: 15px auto;
   display: none;
   padding: 10px;
-}
+}*/
 
 #login-buttons {
   padding: 15px;

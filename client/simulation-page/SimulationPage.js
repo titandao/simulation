@@ -31,7 +31,14 @@ Template.SimulationPage.onCreated(function() {
 
 Template.SimulationPage.helpers({
 
-
+  getContractNames: function(contracts) {
+    var result = [];
+    for (var i=0; i<contracts.length; i++) {
+      result.push({name:contracts[i].name});
+    }
+    console.log(result);
+    return result;
+  },
 
   simulationRunning: function() {
     return Session.get('simulationRunning') || false;
@@ -48,8 +55,21 @@ Template.SimulationPage.helpers({
 
    simulation: ()=> {
      var id = FlowRouter.getParam('_id');
-     return Simulations.findOne({_id: id});
+     var sim = Simulations.findOne({_id: id});
+
+     if (!sim) return;
+
+     // populate contracts
+     sim.contracts_obj = Contracts.find({
+       "_id": { "$in": sim.contracts }
+     }).fetch();
+
+    //  console.log(sim.contracts[0]);
+     console.log(sim);
+     return sim;
    },
+
+
 
   //  contractNames: function() {
   //    return ["aaaaaaaaa", "bbbbbbbb", "cccccccccc"];
@@ -82,6 +102,22 @@ Template.SimulationPage.helpers({
 
 
 Template.SimulationPage.events({
+  'change #contract-select': function(e) {
+    console.log('select');
+  },
+
+  "autocompleteselect input": function(event, template, doc) {
+    // console.log("selected ", doc._id);
+    // add the id to the list
+    var sim_id = FlowRouter.getParam('_id');
+    var con = doc._id;
+    Meteor.call('updateSimulationAddContract', sim_id, con, function(err) {
+      if (err) return ErrorMsg(err.toString());
+      SuccessMsg("Update Successful");
+    });
+  },
+
+
   // chosen over a simple 'toggle' for UX
   'click #run-simulation': function(e) {
       e.preventDefault();
@@ -113,11 +149,5 @@ Template.SimulationPage.events({
 
     // clear values
     // e.target.reset();
-  },
-
-
-  'submit #simulation-add-contract': function(e) {
-    e.preventDefault();
-
   }
 });

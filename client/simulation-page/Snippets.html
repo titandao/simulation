@@ -1,0 +1,36 @@
+<template name="SimulationContract">
+
+  <div class="summary-box">
+    {{#if name}}
+      <div>
+        <strong>name: </strong>{{ name }}
+      </div>
+    {{/if}}
+    <div>
+      <strong>address: </strong>{{ address }}
+    </div>
+    <div>
+      <strong>author: </strong>{{ author }}
+    </div>
+    <div>
+      <strong>id: </strong>{{ _id }}
+    </div>
+
+
+    {{#if isOwner}}
+      <div class="buttons">
+        <a href="/contract/{{_id}}" class="btn btn-default">
+          <span class="fa fa-link"></span>
+        </a>
+
+        <span class="btn btn-danger remove">
+          <span class="fa fa-remove"></span>
+        </span>
+      </div>
+    {{/if}}
+  </div>
+
+
+
+
+</template>

@@ -24,6 +24,7 @@ check@1.2.1
 coffeescript@1.0.17
 d3js:d3@3.5.8
 dandv:caret-position@2.1.1
+davidqwk:c3@0.0.1
 dburles:mongo-collection-instances@0.3.4
 ddp@1.2.5
 ddp-client@1.2.7
@@ -102,6 +103,7 @@ reload@1.1.8
 retry@1.0.7
 robodo:async@0.9.0
 routepolicy@1.0.10
+sergeyt:d3@3.4.1
 service-configuration@1.0.9
 session@1.1.5
 sha@1.0.7

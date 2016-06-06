@@ -1,14 +1,24 @@
 <template name="SimulationPage">
   <h1>Simulation Page</h1>
 
-
-
   <div class="row">
     <div class="col-md-12">
-      <button class="btn btn-primary">
+      <button id="run-simulation" class="btn btn-primary">
         <span class="fa fa-play"></span>
         Run Simulation
       </button>
+
+      {{#if simulationRunning}}
+        <button id="stop-simulation" class="btn btn-danger">
+          <span class="fa fa-stop"></span>
+          Stop Simulation
+        </button>
+      {{/if}}
+
+      <div id="simulationViewer">
+        {{> lineChart }}
+      </div>
+
     </div>
   </div>
 
@@ -34,7 +44,29 @@
 
 
     <div class="col-md-6">
-      <h2>History</h2>
+      <h2>Metrics</h2>
+      <p>
+        These are public variables in contracts that we wish to track during
+        the simulation
+      </p>
+
+      <form id="simulation-add-metric">
+        <fieldset class="form-group">
+          <select name="contract" class="form-control">
+            <option selected="selected">Sample</option>
+            <option>greeter</option>
+          </select>
+          <small class="text-muted">Contract</small>
+        </fieldset>
+        <fieldset class="form-group">
+          <select name="metric" class="form-control">
+            <option selected="selected">0xalfdss</option>
+            <option>0xf212323</option>
+          </select>
+          <small class="text-muted">Public variable</small>
+        </fieldset>
+      </form>
+
     </div>
   </div>
   <!-- end row -->
@@ -67,8 +99,45 @@
     <div class="col-md-6">
       <h2>Agents</h2>
 
+      <h3>New Agent</h3>
       <form id="simulation-add-agent">
+        <fieldset class="form-group">
+          <select name="account" class="form-control">
+            <option selected="selected">0xalfdss</option>
+            <option>0xf212323</option>
+          </select>
+          <small class="text-muted">The account from which to execute this</small>
+        </fieldset>
+
+        <fieldset class="form-group">
+          <select name="contract" class="form-control">
+            <option selected="selected">contract...</option>
+          </select>
+          <small class="text-muted">Contract</small>
+        </fieldset>
+
+        <fieldset class="form-group">
+          <select name="method" class="form-control">
+            <option selected="selected">method...</option>
+          </select>
+          <small class="text-muted">Method to call</small>
+        </fieldset>
+
+        <fieldset class="form-group">
+          <input class="form-control" name="frequency" placeholder="frequency in ms" type="text" />
+          <small class="text-muted">
+            Frequency at which to call the method, in milliseconds. -1 for a one-time call
+          </small>
+        </fieldset>
+
+        <!-- <fieldset class="form-group">
+          <input class="form-control" name="quantify" placeholder="number of agents" type="text" />
+          <small class="text-muted"></small>
+        </fieldset> -->
       </form>
+
+      <h3>Current Agents</h3>
+
     </div>
   </div>
   <!-- end row -->

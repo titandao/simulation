@@ -1,10 +1,15 @@
 
 
+
 Template.SimulationPage.onCreated(function() {
   var self = this;
   self.autorun(function() {
     var id = FlowRouter.getParam('_id');
-    self.subscribe('singleSimulation', id);
+    // self.subscribe('singleSimulation', id);
+    // self.subscribe('simulations', id);
+    Session.set('simulationRunning', false);
+
+
   });
 
 
@@ -19,7 +24,24 @@ Template.SimulationPage.onCreated(function() {
 
 
 
+
+// Template.SimulationPage.simulationRunning = ()=> {
+//   return "false";
+// }
+
 Template.SimulationPage.helpers({
+
+
+
+  simulationRunning: function() {
+    return Session.get('simulationRunning') || false;
+  },
+
+  // toggleSimulationRunning() {
+  //   Session.set('simulationRunning', Math.round(Math.random() * 10));
+  //   // this.simulationRunning +=  1; //!this.simulationRunning;
+  // },
+
    isOwner() {
      return this.author === Meteor.userId();
    },
@@ -48,7 +70,7 @@ Template.SimulationPage.helpers({
         {
           collection: Contracts,
           field: "name",
-          options: '',
+          options: 'i', // case insensitive; can't index
           matchAll: false,
           template: Template.Contract,
           filter: { author: Meteor.userId() } // match only this user's contracts
@@ -60,6 +82,18 @@ Template.SimulationPage.helpers({
 
 
 Template.SimulationPage.events({
+  // chosen over a simple 'toggle' for UX
+  'click #run-simulation': function(e) {
+      e.preventDefault();
+      Session.set('simulationRunning', true);
+      $('#simulationViewer').slideDown();
+  },
+  'click #stop-simulation': function(e) {
+      e.preventDefault();
+      Session.set('simulationRunning', false);
+      $('#simulationViewer').slideUp();
+  },
+
   'submit #simulation-basic': function(e) {
     e.preventDefault();
 

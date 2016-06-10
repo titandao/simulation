@@ -229,5 +229,27 @@ Template.SimulationPage.events({
 
     // clear values
     // e.target.reset();
+  },
+
+  'submit #simulation-add-metric': (e)=> {
+    e.preventDefault();
+
+    var data = {
+      contractId: e.target.contractId.value,
+      metric: e.target.metric.value
+    };
+    console.log(data);
+  },
+  'submit #simulation-add-agent': (e)=> {
+    e.preventDefault();
+
+    var data = {
+      account: e.target.account.value,
+      contractId: e.target.contractId.value,
+      metric: e.target.metric.value,
+      starttime: e.target.starttime.value,
+      frequency: e.target.frequency.value
+    };
+    console.log(data);
   }
 });

@@ -16,6 +16,44 @@ Simulations = new Mongo.Collection('simulations');
 // };
 
 
+AgentSchema = new SimpleSchema({
+  account: {
+    type: String,
+    label: "account"
+  },
+  contractName: {
+    type: String,
+    label: "contractName",
+    optional: true
+  },
+  contractMethod: {
+    type: String,
+    label: "contractMethod"
+    // optional: true
+  },
+
+  // in milliseconds
+  startTime: {
+    type: Number,
+    label: "startTime",
+    min: 0
+  },
+  frequency: {
+    type: Number,
+    label: "frequency",
+    min: -1 // one-time call
+  },
+
+  createdAt: {
+    type: Date,
+    label: "Created At",
+    autoValue: function() {
+      return new Date();
+    }
+  }
+});
+
+
 SimulationSchema = new SimpleSchema({
 
   // store contract ids

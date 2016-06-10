@@ -1,5 +1,16 @@
 
-
+// default function() for a contract
+// i.e. sending it ether
+var sendFunctionAbi = {
+  "constant": false,
+  "name": 'send',
+  "type": "function",
+  "inputs": [{
+  	"name": "amount",
+  	"type": "uint256"
+	}],
+  "outputs": []
+};
 
 Template.SimulationPage.onCreated(function() {
   var self = this;
@@ -11,14 +22,6 @@ Template.SimulationPage.onCreated(function() {
 
 
   });
-
-
-  // self.autorun(()=> {
-  //   console.log("hey");
-  //   $( '#simulation-add-contract input[name="name"]' ).autocomplete({
-  //     source: ["aaaa", "bbbb", "cccc"]
-  //   });
-  // });
 });
 
 
@@ -30,13 +33,76 @@ Template.SimulationPage.onCreated(function() {
 // }
 
 Template.SimulationPage.helpers({
+  metricsSelectedContract: function() {
+    var id = Session.get('metrics-selected-contract-id');
 
-  getContractNames: function(contracts) {
+    if (!id) return {};
+
+    // get the contract, and public variables
+    var con = Contracts.findOne({_id: id});
+    return con;
+    // console.log(con);
+  },
+  agentsSelectedContract: function() {
+    var id = Session.get('agents-selected-contract-id');
+
+    if (!id) return {};
+
+    // get the contract, and public variables
+    var con = Contracts.findOne({_id: id});
+    return con;
+  },
+
+  getContractMetrics: function(contract) {
+    if (!contract) return [];
+
     var result = [];
-    for (var i=0; i<contracts.length; i++) {
-      result.push({name:contracts[i].name});
+    try {
+      var abi = JSON.parse(contract.abi);
+    } catch(e) {
+      console.log(e);
+      console.log(contract.abi);
+      return [];
     }
-    console.log(result);
+
+    if (!abi) return [];
+
+    var item;
+    for (var i=0; i<abi.length; i++) {
+      item = abi[i];
+      if (item.constant) {
+        result.push(item);
+      }
+    }
+    // console.log(result);
+    return result;
+  },
+
+  getContractMethods: function(contract) {
+    if (!contract) return [];
+
+    var result = [sendFunctionAbi];
+    try {
+      var abi = JSON.parse(contract.abi);
+    } catch(e) {
+      console.log(e);
+      console.log(contract.abi);
+      return [];
+    }
+
+    if (!abi) return [];
+
+    var item;
+    for (var i=0; i<abi.length; i++) {
+      item = abi[i];
+      if (item.constant===false) {
+        // if (item['type']=='constructor') {
+        //   item['name'] = 'constructor';
+        // }
+        result.push(item);
+      }
+    }
+    // console.log(result);
     return result;
   },
 
@@ -57,15 +123,14 @@ Template.SimulationPage.helpers({
      var id = FlowRouter.getParam('_id');
      var sim = Simulations.findOne({_id: id});
 
-     if (!sim) return;
+     if (!sim) return {};
 
      // populate contracts
      sim.contracts_obj = Contracts.find({
        "_id": { "$in": sim.contracts }
      }).fetch();
 
-    //  console.log(sim.contracts[0]);
-     console.log(sim);
+
      return sim;
    },
 
@@ -76,6 +141,10 @@ Template.SimulationPage.helpers({
   //   //  return Contracts.find().fetch().map(function(it){ return it.name; });
   //  }
    settings: function() {
+     // get sim for sim.contracts...
+     var id = FlowRouter.getParam('_id');
+     var sim = Simulations.findOne({_id: id});
+
     return {
       position: "top",
       // position: Session.get("position"),
@@ -93,7 +162,10 @@ Template.SimulationPage.helpers({
           options: 'i', // case insensitive; can't index
           matchAll: false,
           template: Template.Contract,
-          filter: { author: Meteor.userId() } // match only this user's contracts
+          filter: {
+            author: Meteor.userId(),
+            _id: { "$nin": sim ? sim.contracts : [] } // not already in simulation
+          } // match only this user's contracts
         }
       ]
     };
@@ -102,8 +174,16 @@ Template.SimulationPage.helpers({
 
 
 Template.SimulationPage.events({
-  'change #contract-select': function(e) {
-    console.log('select');
+  'change #metric-contract-select': function(e) {
+    var val = $(e.target).val().trim(); // contract id
+
+    Session.set('metrics-selected-contract-id', val);
+  },
+
+  'change #agent-contract-select': function(e) {
+    var val = $(e.target).val().trim(); // contract id
+
+    Session.set('agents-selected-contract-id', val);
   },
 
   "autocompleteselect input": function(event, template, doc) {

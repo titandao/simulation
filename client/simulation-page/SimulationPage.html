@@ -54,24 +54,27 @@
 
       <form id="simulation-add-metric">
         <fieldset class="form-group">
-          <select id="contract-select" name="contract" class="form-control">
+          <select id="metric-contract-select" name="contract" class="form-control">
             <option selected="selected">--Contract name--</option>
-            {{#each getContractNames simulation.contracts_obj }}
-              <option>{{name}}</option>
+            {{#each simulation.contracts_obj }}
+              <option value={{_id}}>{{name}}</option>
             {{/each}}
           </select>
           <small class="text-muted">Contract</small>
         </fieldset>
         <fieldset class="form-group">
           <select name="metric" class="form-control">
-            {{#each currentContractMethods }}
-            <option></option>
-            {{ else }}
-              <option>--Select a contract above--</option>
+            <option>--Select a contract above--</option>
+            {{#each getContractMetrics metricsSelectedContract }}
+              <option val={{name}}>{{name}}</option>
             {{/each}}
           </select>
           <small class="text-muted">Public variable</small>
         </fieldset>
+
+        <button type="submit" class="btn btn-success">
+          <span class="fa fa-plus"></span>
+        </button>
       </form>
 
     </div>
@@ -125,15 +128,22 @@
         </fieldset>
 
         <fieldset class="form-group">
-          <select name="contract" class="form-control">
-            <option selected="selected">contract...</option>
+          <select id="agent-contract-select" name="contract" class="form-control">
+            <option selected="selected">--Contract name--</option>
+            {{#each simulation.contracts_obj }}
+              <option value={{_id}}>{{name}}</option>
+            {{/each}}
           </select>
+
           <small class="text-muted">Contract</small>
         </fieldset>
 
         <fieldset class="form-group">
-          <select name="method" class="form-control">
-            <option selected="selected">method...</option>
+          <select name="metric" class="form-control">
+            <option>--Select a contract above--</option>
+            {{#each getContractMethods agentsSelectedContract }}
+              <option val={{name}}>{{name}}</option>
+            {{/each}}
           </select>
           <small class="text-muted">Method to call</small>
         </fieldset>

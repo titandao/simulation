@@ -55,7 +55,7 @@
       <form id="simulation-add-metric">
         <fieldset class="form-group">
           <select id="metric-contract-select" name="contractId" class="form-control">
-            <option selected="selected">--Contract name--</option>
+            <option value="" selected="selected">--Contract name--</option>
             {{#each simulation.contracts_obj }}
               <option value={{_id}}>{{name}}</option>
             {{/each}}
@@ -64,7 +64,7 @@
         </fieldset>
         <fieldset class="form-group">
           <select name="metric" class="form-control">
-            <option>--Select a contract above--</option>
+            <option value="" selected="selected">--Select a contract above--</option>
             {{#each getContractMetrics metricsSelectedContract }}
               <option val={{name}}>{{name}}</option>
             {{/each}}
@@ -76,6 +76,10 @@
           <span class="fa fa-plus"></span>
         </button>
       </form>
+
+      {{#each simulation.metrics }}
+        {{> Metric}}
+      {{/each}}
 
     </div>
   </div>
@@ -129,7 +133,7 @@
 
         <fieldset class="form-group">
           <select id="agent-contract-select" name="contractId" class="form-control">
-            <option selected="selected">--Contract name--</option>
+            <option value="" selected="selected">--Contract name--</option>
             {{#each simulation.contracts_obj }}
               <option value={{_id}}>{{name}}</option>
             {{/each}}
@@ -140,7 +144,7 @@
 
         <fieldset class="form-group">
           <select name="metric" class="form-control">
-            <option>--Select a contract above--</option>
+            <option value="">--Select a contract above--</option>
             {{#each getContractMethods agentsSelectedContract }}
               <option val={{name}}>{{name}}</option>
             {{/each}}

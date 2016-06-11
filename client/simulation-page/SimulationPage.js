@@ -238,7 +238,13 @@ Template.SimulationPage.events({
       contractId: e.target.contractId.value,
       metric: e.target.metric.value
     };
-    console.log(data);
+
+    var sim_id = FlowRouter.getParam('_id');
+
+    Meteor.call('simulationAddMetric', sim_id, data, (err)=> {
+      console.log(err);
+    });
+    // console.log(data);
   },
   'submit #simulation-add-agent': (e)=> {
     e.preventDefault();
@@ -250,6 +256,27 @@ Template.SimulationPage.events({
       starttime: e.target.starttime.value,
       frequency: e.target.frequency.value
     };
-    console.log(data);
+
+    Meteor.call('simulationAddAgent', data);
+    // console.log(data);
+  }
+});
+
+
+/*
+  Metric view
+*/
+
+Template.Metric.events({
+  'click .remove'(e) {
+
+    e.preventDefault();
+
+    var sim_id = FlowRouter.getParam('_id');
+    Meteor.call('simulationRemoveMetric', sim_id, this._id, (err)=> {
+      if (err) {
+        console.log(err)
+      }
+    });
   }
 });

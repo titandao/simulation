@@ -16,6 +16,18 @@ Simulations = new Mongo.Collection('simulations');
 // };
 
 
+MetricSchema = new SimpleSchema({
+  contractId: {
+    type: String,
+    label: "contractId"
+  },
+  metric: {
+    type: String,
+    label: "metric"
+  }
+});
+
+
 AgentSchema = new SimpleSchema({
   account: {
     type: String,
@@ -55,6 +67,18 @@ AgentSchema = new SimpleSchema({
 
 
 SimulationSchema = new SimpleSchema({
+  // list of metric names e.g. "total"
+  metrics: {
+    type: [MetricSchema],
+    label: "metrics",
+    optional: true
+  },
+
+  agents: {
+    type: [AgentSchema],
+    label: "agents",
+    optional: true
+  },
 
   // store contract ids
   contracts: {
@@ -95,9 +119,20 @@ Simulations.attachSchema( SimulationSchema );
 
 
 Meteor.methods({
-  // contracts() {
-  //   var _ids =
-  // },
+  simulationAddMetric: (sim_id, data)=> {
+    console.log(data);
+    return;
+    Simulations.update(sim_id, {
+      $push: {
+        'metrics': data
+      }
+    });
+
+  },
+
+  simulationAddAgent: (data)=> {
+    console.log(data);
+  },
 
   addSimulation: function(data) {
 
@@ -134,6 +169,16 @@ Meteor.methods({
     Simulations.update(sim_id, {
       $pull: {
         'contracts': con_id
+      }
+    });
+  },
+
+  simulationRemoveMetric: (sim_id, metric_id)=> {
+    console.log('rem'); return;
+
+    Simulations.update(sim_id, {
+      $pull: {
+        'contracts': metric_id
       }
     });
   },

@@ -37,6 +37,10 @@ SuccessMsg = function( msg ) {
   showMsg('.alert-success', msg);
 };
 
+WarningMsg = function( msg ) {
+  showMsg('.alert-warning', msg);
+};
+
 ToggleLoader = function() {
   $('.loader').toggle();
 }

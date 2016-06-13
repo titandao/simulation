@@ -3,6 +3,12 @@
 
   <div class="row">
     <div class="col-md-12">
+
+      <button id="toggle-chart" class="btn btn-default">
+        <span class="fa fa-area-chart"></span>
+        Toggle Chart
+      </button>
+
       <button id="run-simulation" class="btn btn-primary">
         <span class="fa fa-play"></span>
         Run Simulation
@@ -16,7 +22,8 @@
       {{/if}}
 
       <div id="simulationViewer">
-        {{> lineChart }}
+        <!-- {{> lineChart }} -->
+        {{> c3 myChartData}}
       </div>
 
     </div>
@@ -79,6 +86,8 @@
 
       {{#each simulation.metrics }}
         {{> Metric}}
+      {{else}}
+        This simulation has no metrics yet
       {{/each}}
 
     </div>
@@ -125,14 +134,16 @@
       <form id="simulation-add-agent">
         <fieldset class="form-group">
           <select name="account" class="form-control">
-            <option selected="selected">0xalfdss</option>
-            <option>0xf212323</option>
+            <option selected="selected">--Account--</option>
+            {{#each web3Accounts }}
+              <option value={{name}}>{{name}}</option>
+            {{/each}}
           </select>
           <small class="text-muted">The account from which to execute this</small>
         </fieldset>
 
         <fieldset class="form-group">
-          <select id="agent-contract-select" name="contractId" class="form-control">
+          <select id="agent-contract-select" name="contractName" class="form-control">
             <option value="" selected="selected">--Contract name--</option>
             {{#each simulation.contracts_obj }}
               <option value={{_id}}>{{name}}</option>
@@ -143,7 +154,7 @@
         </fieldset>
 
         <fieldset class="form-group">
-          <select name="metric" class="form-control">
+          <select name="contractMethod" class="form-control">
             <option value="">--Select a contract above--</option>
             {{#each getContractMethods agentsSelectedContract }}
               <option val={{name}}>{{name}}</option>
@@ -154,14 +165,14 @@
 
 
         <fieldset class="form-group">
-          <input class="form-control" name="starttime" placeholder="start time in ms" type="text" />
+          <input class="form-control" name="startTime" placeholder="start time in ms" min="0" type="number" />
           <small class="text-muted">
             Time from start at which to call the method, in milliseconds
           </small>
         </fieldset>
 
         <fieldset class="form-group">
-          <input class="form-control" name="frequency" placeholder="frequency in ms" type="text" />
+          <input class="form-control" name="frequency" placeholder="frequency in ms" min="-1" type="number" />
           <small class="text-muted">
             Frequency at which to call the method, in milliseconds. -1 for a one-time call
           </small>
@@ -179,9 +190,8 @@
 
       <h3>Current Agents</h3>
 
-      {{#each agents}}
-        <!-- {{> Contract}} -->
-        moo
+      {{#each simulation.agents}}
+        {{> Agent}}
       {{else}}
         This simulation has no agents yet
       {{/each}}

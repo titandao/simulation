@@ -21,6 +21,22 @@ Template.SimulationPage.onCreated(function() {
     Session.set('simulationRunning', false);
 
 
+    var initialColumns = [
+      ['data1', 30, 200, 100, 400, 150, 250]
+    ];
+    Session.set('chartColumns', initialColumns);
+
+
+    // also get web3 accounts
+    web3.eth.getAccounts((err, result)=> {
+      if (err) {
+        console.log(err);
+        return ErrorMsg(err);
+      }
+
+      var web3Accounts = result.map((x)=> { return { name: x }});
+      Session.set('web3-accounts', web3Accounts);
+    });
   });
 });
 
@@ -33,6 +49,38 @@ Template.SimulationPage.onCreated(function() {
 // }
 
 Template.SimulationPage.helpers({
+  myChartData: function() {
+
+    var obj = {
+      data: {
+				columns: [],
+				type: 'spline'
+			}
+    };
+
+    if (Session.get('chartColumns')) {
+      obj.data.columns = Session.get('chartColumns');
+    }
+
+
+    return obj;
+
+
+
+		// return {
+		// 	data: {
+		// 		columns: [
+		// 			['data1', 30, 200, 100, 400, 150, 250],
+		// 			['data2', 130, 100, 140, 200, 150, 50]
+		// 		],
+		// 		type: 'spline'
+		// 	}
+		// };
+	},
+
+  web3Accounts: ()=> {
+    return Session.get('web3-accounts') || [];
+  },
   metricsSelectedContract: function() {
     var id = Session.get('metrics-selected-contract-id');
 
@@ -203,11 +251,32 @@ Template.SimulationPage.events({
       e.preventDefault();
       Session.set('simulationRunning', true);
       $('#simulationViewer').slideDown();
+
+
+      // also start chart updater
+      var chartUpdater = setInterval(()=> {
+        var cols = Session.get('chartColumns');
+        // add data
+        cols[0].push(200);
+        console.log(cols);
+        Session.set('chartColumns', cols)
+      }, 4000);
+
+      // set the updater so we can stop it
+      Session.set('chartUpdater', chartUpdater);
   },
   'click #stop-simulation': function(e) {
       e.preventDefault();
       Session.set('simulationRunning', false);
-      $('#simulationViewer').slideUp();
+
+      var chartUpdater = Session.get('chartUpdater');
+      clearTimeout(chartUpdater);
+      // $('#simulationViewer').slideUp();
+  },
+
+  'click #toggle-chart': function(e) {
+      e.preventDefault();
+      $('#simulationViewer').slideToggle();
   },
 
   'submit #simulation-basic': function(e) {
@@ -242,7 +311,10 @@ Template.SimulationPage.events({
     var sim_id = FlowRouter.getParam('_id');
 
     Meteor.call('simulationAddMetric', sim_id, data, (err)=> {
-      console.log(err);
+      if (err) {
+        console.log(err);
+        return ErrorMsg(err);
+      }
     });
     // console.log(data);
   },
@@ -251,13 +323,19 @@ Template.SimulationPage.events({
 
     var data = {
       account: e.target.account.value,
-      contractId: e.target.contractId.value,
-      metric: e.target.metric.value,
-      starttime: e.target.starttime.value,
+      contractName: e.target.contractName.value,
+      contractMethod: e.target.contractMethod.value,
+      startTime: e.target.startTime.value,
       frequency: e.target.frequency.value
     };
 
-    Meteor.call('simulationAddAgent', data);
+    var sim_id = FlowRouter.getParam('_id');
+    Meteor.call('simulationAddAgent', sim_id, data, (err)=> {
+      if (err) {
+        console.log(err);
+        return ErrorMsg(err);
+      }
+    });
     // console.log(data);
   }
 });

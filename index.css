@@ -1,5 +1,22 @@
 /* CSS declarations go here */
 
+/*.navbar-default {
+  background-color: #5757FF;
+}
+.navbar-brand, .login-link-text {
+  color: white !important;
+}*/
+
+.contract-snippet {
+  background-color: #AEC6CF;
+}
+.metric-snippet {
+  background-color: #779ECB;
+}
+.agent-snippet {
+  background-color: #B39EB5;
+}
+
 
 main {
   padding-bottom: 10%;

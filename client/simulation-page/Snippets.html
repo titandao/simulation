@@ -1,6 +1,8 @@
+<!-- Contract -->
+
 <template name="SimulationContract">
 
-  <div class="summary-box">
+  <div class="summary-box contract-snippet">
     {{#if name}}
       <div>
         <strong>name: </strong>{{ name }}
@@ -30,7 +32,78 @@
     {{/if}}
   </div>
 
+</template>
 
 
+
+
+<!-- Metric -->
+
+
+<template name="Metric">
+
+  <div class="summary-box metric-snippet">
+    {{#if contractId}}
+      <div>
+        <strong>contractId: </strong>{{ contractId }}
+      </div>
+    {{/if}}
+    <div>
+      <strong>metric: </strong>{{ metric }}
+    </div>
+
+
+
+    <!-- {{#if isOwner}} -->
+      <div class="buttons">
+        <!-- <a href="/contract/{{_id}}" class="btn btn-default">
+          <span class="fa fa-link"></span>
+        </a> -->
+
+        <span class="btn btn-danger remove">
+          <span class="fa fa-remove"></span>
+        </span>
+      </div>
+    <!-- {{/if}} -->
+  </div>
+
+</template>
+
+
+<!-- Agent -->
+<template name="Agent">
+
+  <div class="summary-box agent-snippet">
+    <div>
+      <strong>account: </strong>{{ account }}
+    </div>
+    <div>
+      <strong>contractName: </strong>{{ contractName }}
+    </div>
+    <div>
+      <strong>contractMethod: </strong>{{ contractMethod }}
+    </div>
+    <div>
+      <strong>startTime: </strong>{{ startTime }}
+    </div>
+    <div>
+      <strong>frequency: </strong>{{ frequency }}
+    </div>
+
+
+
+
+    <!-- {{#if isOwner}} -->
+      <div class="buttons">
+        <!-- <a href="/contract/{{_id}}" class="btn btn-default">
+          <span class="fa fa-link"></span>
+        </a> -->
+
+        <span class="btn btn-danger remove">
+          <span class="fa fa-remove"></span>
+        </span>
+      </div>
+    <!-- {{/if}} -->
+  </div>
 
 </template>

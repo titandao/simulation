@@ -120,8 +120,8 @@ Simulations.attachSchema( SimulationSchema );
 
 Meteor.methods({
   simulationAddMetric: (sim_id, data)=> {
-    console.log(data);
-    return;
+    // console.log(data);
+    // return;
     Simulations.update(sim_id, {
       $push: {
         'metrics': data
@@ -130,8 +130,13 @@ Meteor.methods({
 
   },
 
-  simulationAddAgent: (data)=> {
-    console.log(data);
+  simulationAddAgent: (sim_id, data)=> {
+    // console.log(data);
+    Simulations.update(sim_id, {
+      $push: {
+        'agents': data
+      }
+    });
   },
 
   addSimulation: function(data) {
@@ -174,11 +179,21 @@ Meteor.methods({
   },
 
   simulationRemoveMetric: (sim_id, metric_id)=> {
-    console.log('rem'); return;
+    // console.log('rem'); return;
 
     Simulations.update(sim_id, {
       $pull: {
         'contracts': metric_id
+      }
+    });
+  },
+
+  simulationRemoveAgent: (sim_id, ag_id)=> {
+    // console.log('rem'); return;
+
+    Simulations.update(sim_id, {
+      $pull: {
+        'agents': ag_id
       }
     });
   },

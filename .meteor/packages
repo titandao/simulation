@@ -30,6 +30,5 @@ misrab:generic-helpers
 mizzao:autocomplete
 session
 robodo:async
-d3js:d3
 momentjs:moment
-davidqwk:c3
+perak:c3

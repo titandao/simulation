@@ -15,9 +15,13 @@ var sendFunctionAbi = {
   "outputs": []
 };
 
+// dummy sample data
 var initialColumns = [
-  ['data1', 30, 200, 100, 400, 150, 250]
+  // ['data1', 30, 200, 100, 400, 150, 250]
 ];
+
+var MAX_TIMEOUT_MS = 300000; // 300s=5mins
+var UPDATE_INTERVAL = 4000;
 
 // get current simulation's metrics and add full contract to each
 // by full contract we mean the web3 contract instance. Do this before simulation
@@ -48,11 +52,27 @@ var preparePopulatedMetrics = (cb)=> {
   });
 };
 
+// returns the index of the col with given key
+// e.g. [ ['moo' ....]] would be 0
+// -1 if not found
+var findColIndex = function(key, cols) {
+  if (!cols.length) return -1;
+  for (var i=0; i<cols.length; i++) {
+    if (!cols[i].length) continue;
+    if (cols[i][0] === key) return i;
+  }
+
+  return -1;
+};
+
 
 var updateSimulationChart = (populatedMetrics)=> {
 
+  // return;
+
   var populatedMetrics = Session.get('populatedMetrics');
   if (!populatedMetrics || !populatedMetrics.length) return;
+
 
   // for each metric, find the contract (abi + address)
   // and call the metric
@@ -69,8 +89,21 @@ var updateSimulationChart = (populatedMetrics)=> {
 
     web3.eth.contract(abi).at(contract.address, (err, contractInstance)=> {
       if (err) return cb(err);
-      contractInstance['total']((err, value)=> {
-        console.log(value);
+
+      contractInstance[item.metric]((err, bigNumber)=> {
+
+        // convert from weird BigNumber object
+        var value = bigNumber.valueOf();
+
+
+        var cols = Session.get('chartColumns');
+
+        var i = findColIndex(item.metric,cols);
+        // add data
+        cols[i].push(value);
+        Session.set('chartColumns', cols)
+
+
         cb();
       });
     });
@@ -351,6 +384,18 @@ Template.SimulationPage.events({
 
         Session.set('populatedMetrics', populatedMetrics);
 
+        // initialise data columns
+        var chartColumns = []; // Session.get('chartColumns');
+        for (var i=0; i<populatedMetrics.length; i++) {
+          chartColumns.push([populatedMetrics[i].metric, 30, 200, 100, 400, 150, 250]);
+        //   chartColumns.push([populatedMetrics[i].metric, 200*i, 200*i, 200*i]);
+        }
+        Session.set('chartColumns', chartColumns);
+        // console.log(chartColumns);
+
+
+
+
         // begin simulation
         // set as running
         Session.set('simulationRunning', true);
@@ -358,18 +403,23 @@ Template.SimulationPage.events({
 
 
         // clear chart
-        Session.set('chartColumns', initialColumns);
+        // Session.set('chartColumns', initialColumns);
 
         // also start chart updater
-        var chartUpdater = setInterval(updateSimulationChart, 4000);
-        // var cols = Session.get('chartColumns');
-        // // add data
-        // cols[0].push(200);
-        // console.log(cols);
-        // Session.set('chartColumns', cols)
-
+        var chartUpdater = setInterval(updateSimulationChart, UPDATE_INTERVAL);
         // set the updater so we can stop it
         Session.set('chartUpdater', chartUpdater);
+
+
+        // max timeout on the simulation
+        setTimeout(()=> {
+          clearTimeout(chartUpdater);
+          var updt = Session.set('chartUpdater');
+          if (updt) {
+            WarningMsg("Simulation timed out...");
+          }
+        }, MAX_TIMEOUT_MS);
+
 
       });
 
@@ -380,6 +430,7 @@ Template.SimulationPage.events({
 
       var chartUpdater = Session.get('chartUpdater');
       clearTimeout(chartUpdater);
+      Session.set('chartUpdater', null);
       // $('#simulationViewer').slideUp();
   },
 

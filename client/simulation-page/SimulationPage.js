@@ -20,56 +20,63 @@ var initialColumns = [
 ];
 
 // get current simulation's metrics and add full contract to each
-var setPopulatedMetrics = ()=> {
+// by full contract we mean the web3 contract instance. Do this before simulation
+// rather than at each iteration.
+// cb(err, populatedMetrics)
+var preparePopulatedMetrics = (cb)=> {
   var populatedMetrics = [];
 
   var id = FlowRouter.getParam('_id');
   var sim = Simulations.findOne({_id: id});
 
   if (!sim || !sim.metrics || !sim.metrics.length) {
-    return Session.set('populatedMetrics', populatedMetrics);
+    return cb(null, populatedMetrics);
   }
 
   // now get each contract
+  var metrics = sim.metrics;
+  async.each(metrics, (item, cb)=> {
+    contract = Contracts.findOne({_id: item.contractId});
+    item.contract = contract;
 
+    populatedMetrics.push(item);
+    cb();
 
-  Session.set('populatedMetrics', populatedMetrics);
-};
-
-// O(n) but should be ok
-var getContractById = (id)=> {
-  var sim = Session.get('currentSimulation');
-  console.log(sim);
-  if (!sim) return;
-
-  for (var i=0; i<sim.contracts.length; i++) {
-    if (sim.contracts[i] === id) return sim.contracts[i];
-    // console.log(id + "," + sim.contracts[i]);
-  }
-
-  return;
+  }, (err)=> {
+    // console.log(populatedMetrics);
+    return cb(err, populatedMetrics);
+  });
 };
 
 
 var updateSimulationChart = (populatedMetrics)=> {
-  // get the required metrics
-  // var sim = Session.get('currentSimulation');
-  // if (!sim) return;
-  // var metrics = sim.metrics;
+
   var populatedMetrics = Session.get('populatedMetrics');
   if (!populatedMetrics || !populatedMetrics.length) return;
 
-  // console.log(metrics);
   // for each metric, find the contract (abi + address)
   // and call the metric
   async.each(populatedMetrics, (item, cb)=> {
-    var contract = item.contract; //getContractById(item.contractId);
-    console.log(contract);
-    var abi = contract.abi;
-    var address = contract.contract
+    var contract = item.contract;
+
+    var abi;
+    try {
+      abi = JSON.parse(contract.abi);
+    } catch(e) {
+      console.log(e);
+      return cb(e);
+    }
+
+    web3.eth.contract(abi).at(contract.address, (err, contractInstance)=> {
+      if (err) return cb(err);
+      contractInstance['total']((err, value)=> {
+        console.log(value);
+        cb();
+      });
+    });
   }, (err)=> {
     if (err) {
-      console.log(err);
+      // console.log(err);
     }
   });
 
@@ -176,7 +183,7 @@ Template.SimulationPage.helpers({
   },
 
   getContractMetrics: function(contract) {
-    if (!contract) return [];
+    if (!contract || !contract.abi) return [];
 
     var result = [];
     try {
@@ -201,7 +208,7 @@ Template.SimulationPage.helpers({
   },
 
   getContractMethods: function(contract) {
-    if (!contract) return [];
+    if (!contract || !contract.abi) return [];
 
     var result = [sendFunctionAbi];
     try {
@@ -324,31 +331,48 @@ Template.SimulationPage.events({
   'click #run-simulation': function(e) {
       e.preventDefault();
 
-      // update session var
-      // var id = FlowRouter.getParam('_id');
-      // var sim = Simulations.findOne({_id: id});
+      // make sure there are metrics and agents
+      var id = FlowRouter.getParam('_id');
+      var sim = Simulations.findOne({_id: id});
+
+      if (!sim.agents || !sim.agents.length) {
+        return ErrorMsg("Please create an agent first");
+      }
+      if (!sim.metrics || !sim.metrics.length) {
+        return ErrorMsg("Please create a metric first");
+      }
+
+
       // Session.set('currentSimulation', sim);
-      setPopulatedMetrics();
+      preparePopulatedMetrics((err, populatedMetrics)=> {
+        if (err) {
+          return ErrorMsg(err);
+        }
+
+        Session.set('populatedMetrics', populatedMetrics);
+
+        // begin simulation
+        // set as running
+        Session.set('simulationRunning', true);
+        $('#simulationViewer').slideDown();
 
 
-      // set as running
-      Session.set('simulationRunning', true);
-      $('#simulationViewer').slideDown();
+        // clear chart
+        Session.set('chartColumns', initialColumns);
 
+        // also start chart updater
+        var chartUpdater = setInterval(updateSimulationChart, 4000);
+        // var cols = Session.get('chartColumns');
+        // // add data
+        // cols[0].push(200);
+        // console.log(cols);
+        // Session.set('chartColumns', cols)
 
-      // clear chart
-      Session.set('chartColumns', initialColumns);
+        // set the updater so we can stop it
+        Session.set('chartUpdater', chartUpdater);
 
-      // also start chart updater
-      var chartUpdater = setInterval(updateSimulationChart, 4000);
-      // var cols = Session.get('chartColumns');
-      // // add data
-      // cols[0].push(200);
-      // console.log(cols);
-      // Session.set('chartColumns', cols)
+      });
 
-      // set the updater so we can stop it
-      Session.set('chartUpdater', chartUpdater);
   },
   'click #stop-simulation': function(e) {
       e.preventDefault();

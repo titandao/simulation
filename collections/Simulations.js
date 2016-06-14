@@ -17,6 +17,11 @@ Simulations = new Mongo.Collection('simulations');
 
 
 MetricSchema = new SimpleSchema({
+  // manual id for convenience
+  _id: {
+    type: String,
+    label: "_id"
+  },
   contractId: {
     type: String,
     label: "contractId"
@@ -29,6 +34,11 @@ MetricSchema = new SimpleSchema({
 
 
 AgentSchema = new SimpleSchema({
+  // manual id for convenience
+  _id: {
+    type: String,
+    label: "_id"
+  },
   account: {
     type: String,
     label: "account"
@@ -120,6 +130,7 @@ Simulations.attachSchema( SimulationSchema );
 
 Meteor.methods({
   simulationAddMetric: (sim_id, data)=> {
+    data._id = Random.id();
     // console.log(data);
     // return;
     Simulations.update(sim_id, {
@@ -131,6 +142,9 @@ Meteor.methods({
   },
 
   simulationAddAgent: (sim_id, data)=> {
+    // add a random id
+    data._id = Random.id();
+
     // console.log(data);
     Simulations.update(sim_id, {
       $push: {
@@ -140,26 +154,8 @@ Meteor.methods({
   },
 
   addSimulation: function(data) {
-
-    // console.log(data); //return;
-    // console.log(JSON.stringify(data.abi));
-    // return;
-    // data.abi = { "moo": "foo" };
     data.contracts = [];
     Simulations.insert(data);
-    // try {
-    //   Simulations.insert(data);
-    // } catch(e) {
-    //   console.log("err");
-    //   ErrorMsg(e.toString());
-    // }
-
-
-    // get the contract at given abi, address
-    // var contract = web3.eth.contract(data.abi).at(data.address);
-
-    // console.log(contract);
-
   },
 
   updateSimulationAddContract: function(sim_id, con) {
@@ -179,11 +175,15 @@ Meteor.methods({
   },
 
   simulationRemoveMetric: (sim_id, metric_id)=> {
+    // console.log(sim_id); console.log(metric_id);
     // console.log('rem'); return;
 
     Simulations.update(sim_id, {
       $pull: {
-        'contracts': metric_id
+        'metrics': {
+          // _id is a manual field here
+          "_id": metric_id
+        }
       }
     });
   },

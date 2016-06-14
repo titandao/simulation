@@ -1,3 +1,6 @@
+/*
+  Internal
+*/
 
 // default function() for a contract
 // i.e. sending it ether
@@ -12,18 +15,89 @@ var sendFunctionAbi = {
   "outputs": []
 };
 
+var initialColumns = [
+  ['data1', 30, 200, 100, 400, 150, 250]
+];
+
+// get current simulation's metrics and add full contract to each
+var setPopulatedMetrics = ()=> {
+  var populatedMetrics = [];
+
+  var id = FlowRouter.getParam('_id');
+  var sim = Simulations.findOne({_id: id});
+
+  if (!sim || !sim.metrics || !sim.metrics.length) {
+    return Session.set('populatedMetrics', populatedMetrics);
+  }
+
+  // now get each contract
+
+
+  Session.set('populatedMetrics', populatedMetrics);
+};
+
+// O(n) but should be ok
+var getContractById = (id)=> {
+  var sim = Session.get('currentSimulation');
+  console.log(sim);
+  if (!sim) return;
+
+  for (var i=0; i<sim.contracts.length; i++) {
+    if (sim.contracts[i] === id) return sim.contracts[i];
+    // console.log(id + "," + sim.contracts[i]);
+  }
+
+  return;
+};
+
+
+var updateSimulationChart = (populatedMetrics)=> {
+  // get the required metrics
+  // var sim = Session.get('currentSimulation');
+  // if (!sim) return;
+  // var metrics = sim.metrics;
+  var populatedMetrics = Session.get('populatedMetrics');
+  if (!populatedMetrics || !populatedMetrics.length) return;
+
+  // console.log(metrics);
+  // for each metric, find the contract (abi + address)
+  // and call the metric
+  async.each(populatedMetrics, (item, cb)=> {
+    var contract = item.contract; //getContractById(item.contractId);
+    console.log(contract);
+    var abi = contract.abi;
+    var address = contract.contract
+  }, (err)=> {
+    if (err) {
+      console.log(err);
+    }
+  });
+
+
+  // var cols = Session.get('chartColumns');
+  // // add data
+  // cols[0].push(200);
+  // console.log(cols);
+  // Session.set('chartColumns', cols)
+  // console.log('hey');
+};
+
+/*
+  SimulationPage Template
+*/
+
 Template.SimulationPage.onCreated(function() {
   var self = this;
   self.autorun(function() {
-    var id = FlowRouter.getParam('_id');
+
+
+
     // self.subscribe('singleSimulation', id);
     // self.subscribe('simulations', id);
     Session.set('simulationRunning', false);
 
 
-    var initialColumns = [
-      ['data1', 30, 200, 100, 400, 150, 250]
-    ];
+
     Session.set('chartColumns', initialColumns);
 
 
@@ -249,18 +323,29 @@ Template.SimulationPage.events({
   // chosen over a simple 'toggle' for UX
   'click #run-simulation': function(e) {
       e.preventDefault();
+
+      // update session var
+      // var id = FlowRouter.getParam('_id');
+      // var sim = Simulations.findOne({_id: id});
+      // Session.set('currentSimulation', sim);
+      setPopulatedMetrics();
+
+
+      // set as running
       Session.set('simulationRunning', true);
       $('#simulationViewer').slideDown();
 
 
+      // clear chart
+      Session.set('chartColumns', initialColumns);
+
       // also start chart updater
-      var chartUpdater = setInterval(()=> {
-        var cols = Session.get('chartColumns');
-        // add data
-        cols[0].push(200);
-        console.log(cols);
-        Session.set('chartColumns', cols)
-      }, 4000);
+      var chartUpdater = setInterval(updateSimulationChart, 4000);
+      // var cols = Session.get('chartColumns');
+      // // add data
+      // cols[0].push(200);
+      // console.log(cols);
+      // Session.set('chartColumns', cols)
 
       // set the updater so we can stop it
       Session.set('chartUpdater', chartUpdater);

@@ -174,6 +174,23 @@ Meteor.methods({
     });
   },
 
+
+  // TODO this function is not working for some reason
+  simulationRemoveAgent: function(sim_id, agent_id) {
+    console.log('simulationRemoveAgent');
+
+
+
+    Simulations.update(sim_id, {
+      $pull: {
+        "agents": {
+          "_id": agent_id
+        }
+      }
+    });
+  },
+
+
   simulationRemoveMetric: (sim_id, metric_id)=> {
     // console.log(sim_id); console.log(metric_id);
     // console.log('rem'); return;
@@ -184,16 +201,6 @@ Meteor.methods({
           // _id is a manual field here
           "_id": metric_id
         }
-      }
-    });
-  },
-
-  simulationRemoveAgent: (sim_id, ag_id)=> {
-    // console.log('rem'); return;
-
-    Simulations.update(sim_id, {
-      $pull: {
-        'agents': ag_id
       }
     });
   },

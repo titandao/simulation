@@ -23,6 +23,77 @@ var initialColumns = [
 var MAX_TIMEOUT_MS = 300000; // 300s=5mins
 var UPDATE_INTERVAL = 4000;
 
+
+
+var launchAgents = (sim)=> {
+  // console.log(sim.agents);
+
+  // just launch each in parrallel
+  async.each(sim.agents, (item, cb)=> {
+    var start = item.startTime;
+    var frequency = item.frequency;
+
+    // TEST call desired function once
+    var contract = Contracts.findOne({_id: item.contractName});
+
+    // console.log(item);
+    // console.log(contract);
+
+    try {
+      var abi = JSON.parse(contract.abi);
+    } catch(e) {
+      console.log(e);
+      console.log(contract.abi);
+      return;
+    }
+
+    // get the web3 contract
+    web3.eth.contract(abi).at(contract.address, (err, contractInstance)=> {
+      if (err) {
+        return cb(err);
+      }
+
+      // console.log(contractInstance);
+
+      // for now just send
+      var sender = item.account;
+      var receiver = contract.address;
+      var amount = 10; // 10 wei
+
+      web3.personal.unlockAccount(sender, "passphrase", function(err, result) {
+        if (err) return cb(err);
+
+
+        var interval = setInterval(()=> {
+          web3.eth.sendTransaction({from:sender, to:receiver, value:amount}, (err, result)=> {
+            if (err) {
+              clearTimeout(interval);
+              return cb(err);
+            }
+
+            // console.log(result);
+
+          });
+
+          cb();
+        }, frequency);
+
+      });
+
+
+
+
+      // setInterval(()=> {
+      //   // call the desired function
+      // }, frequency);
+      // cb();
+    });
+
+  }, (err)=> {
+
+  });
+};
+
 // get current simulation's metrics and add full contract to each
 // by full contract we mean the web3 contract instance. Do this before simulation
 // rather than at each iteration.
@@ -95,6 +166,7 @@ var updateSimulationChart = (populatedMetrics)=> {
         // convert from weird BigNumber object
         var value = bigNumber.valueOf();
 
+        // console.log(value);
 
         var cols = Session.get('chartColumns');
 
@@ -376,6 +448,10 @@ Template.SimulationPage.events({
       }
 
 
+      launchAgents(sim); //return;
+
+
+
       // Session.set('currentSimulation', sim);
       preparePopulatedMetrics((err, populatedMetrics)=> {
         if (err) {
@@ -497,24 +573,5 @@ Template.SimulationPage.events({
       }
     });
     // console.log(data);
-  }
-});
-
-
-/*
-  Metric view
-*/
-
-Template.Metric.events({
-  'click .remove'(e) {
-
-    e.preventDefault();
-
-    var sim_id = FlowRouter.getParam('_id');
-    Meteor.call('simulationRemoveMetric', sim_id, this._id, (err)=> {
-      if (err) {
-        console.log(err)
-      }
-    });
   }
 });
